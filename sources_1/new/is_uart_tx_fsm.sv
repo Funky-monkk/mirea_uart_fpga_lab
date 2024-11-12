@@ -107,14 +107,6 @@ always_ff@(posedge clk_i, negedge rst_i) begin
                 state <= IDLE;
             else state <= TSTB2;
         end
-        WEND:begin 
-            if(rxd_rg_i) begin
-                state <= IDLE;
-                rx_data_en_o <= '1;
-                rxct_r_o <= '1;  
-            end  
-            else state <= WEND:
-        end 
     default: state <= IDLE;         
     endcase
 end
