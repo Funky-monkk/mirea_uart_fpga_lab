@@ -71,7 +71,7 @@ import is_pkg_uart_controller::*;
             
             RSTB1: begin
                 if(rx_ce_i) begin
-                    $left(rx_data_t_o) <= ~rxd_rg_i;
+                    rx_data_t_o[9] <= ~rxd_rg_i;
                     state <= RSTB2;
                 end
                 else state <= RSTB1;
@@ -93,7 +93,8 @@ import is_pkg_uart_controller::*;
                     rxct_r_o <= '1;  
                 end  
                 else state <= WEND:
-            end          
+            end 
+        default: state <= IDLE;         
         endcase
     end
 
