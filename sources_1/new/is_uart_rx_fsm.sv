@@ -3,7 +3,7 @@ import is_pkg_uart_controller::*;
 (
     input  logic rxd_rg_i,
     input  logic clk_i,
-    input  logic rst_i,
+    input  logic rstn_i,
     input  logic rx_ce_i,
     
     output logic rx_data_en_o,
@@ -21,8 +21,8 @@ import is_pkg_uart_controller::*;
 
 //=====================
 
-    always_ff@(posedge clk_i, negedge rst_i) begin
-        if(rst_i) begin
+    always_ff@(posedge clk_i, negedge rstn_i) begin
+        if(rstn_i) begin
             state <= IDLE;
             rx_data_en_o <= '0;
             rx_data_t_o <= '0;

@@ -5,7 +5,7 @@ module is_uart_clk_div
 )
 (
     input  logic clk_i,
-    input  logic rst_i,
+    input  logic rstn_i,
     
     output logic slow_clk_o
 );
@@ -16,8 +16,8 @@ module is_uart_clk_div
     logic [CNT_W-1 :0] cnt;
     
     
-    always_ff@(posedge clk_i, negedge rst_i) begin
-        if(~rst_i) begin
+    always_ff@(posedge clk_i, negedge rstn_i) begin
+        if(~rstn_i) begin
             cnt <= '0;
             slow_clk_raw <= '0;
         end

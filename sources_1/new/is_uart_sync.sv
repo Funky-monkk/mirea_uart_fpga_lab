@@ -1,7 +1,7 @@
 module is_uart_sync
 (
     input  logic clk_i,
-    input  logic rst_i,
+    input  logic rstn_i,
     input  logic uart_rxd_i,
     
     output logic uart_rxd_r_o
@@ -9,8 +9,8 @@ module is_uart_sync
 
     logic [1:0] rx_ff;
     
-    always_ff@(posedge clk_i, negedge rst_i) begin
-        if(~rst_i) begin
+    always_ff@(posedge clk_i, negedge rstn_i) begin
+        if(~rstn_i) begin
         uart_rxd_r_o <= '0;
         rx_ff <= '0;
         end

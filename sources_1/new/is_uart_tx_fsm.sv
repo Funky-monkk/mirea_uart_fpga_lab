@@ -2,7 +2,7 @@ module is_uart_tx_fsm
 import is_pkg_uart_controller::*;
 (
     input  logic clk_i,
-    input  logic rst_i,
+    input  logic rstn_i,
 
     input  logic uart_ce_i,
     input  logic tx_ce_i,
@@ -27,8 +27,8 @@ logic tx_par_bit_r;
 logic [DATA_W-1 :0] tx_data;
 //=====================
 
-always_ff@(posedge clk_i, negedge rst_i) begin
-    if(rst_i) begin
+always_ff@(posedge clk_i, negedge rstn_i) begin
+    if(rstn_i) begin
         state <= IDLE;
         tx_data <= '0;
         tx_par_bit_r <= '0;
