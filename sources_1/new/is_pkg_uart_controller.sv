@@ -7,7 +7,7 @@ package is_pkg_uart_controller;
 localparam DATA_W = 8;
 localparam ADDR_W = 8;
 localparam ROM_W  = 128;
-
+localparam RATIO = 8;
 //====================
 
 

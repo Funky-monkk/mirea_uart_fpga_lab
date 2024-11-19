@@ -1,26 +1,27 @@
-`timescale 1ns / 1ps
-//////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
-// 
-// Create Date: 08.10.2024 19:58:58
-// Design Name: 
-// Module Name: is_uart_cnt_samp_tx
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
-// 
-// Dependencies: 
-// 
-// Revision:
-// Revision 0.01 - File Created
-// Additional Comments:
-// 
-//////////////////////////////////////////////////////////////////////////////////
+module is_uart_cnt_samp_tx
+import is_pkg_uart_controller::*;
+(
+    input  logic clk_i,
+    input  logic rstn_i,
+
+    input  logic uart_ce_i,
+    input  logic txct_r_i,
+
+    output logic tx_ce_o
+);
 
 
-module is_uart_cnt_samp_tx(
+    logic [$clog2(RATIO)-1 :0] cnt_sample;
 
-    );
+
+    always_ff@(posedge clk_i, negedge rstn_i) begin
+        if(~rstn_i) cnt_sample <= '0;
+        else if (txct_r_i) cnt_sample <= '0;
+        else if (uart_ce_i) cnt_sample <= cnt_sample + 1'b1;
+    end
+
+    assign tx_ce_o = uart_ce_i && ~cnt_sample[2] && 
+                         cnt_sample[1] && cnt_sample[0];
+
+
 endmodule
