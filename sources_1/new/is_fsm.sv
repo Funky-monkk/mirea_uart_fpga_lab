@@ -1,0 +1,104 @@
+module is_fsm 
+import is_pkg_uart_controller::*;
+(
+
+    input  logic clk_i,
+    input  logic rstn_i,
+
+    input  logic rx_data_en_i,
+    input  logic [9:0] rx_data_r_i,
+
+    input  logic tx_rdy_r_i,
+    output logic tx_rdy_t_o,
+    output logic [DATA_W-1 :0] tx_data_t_o,
+
+    input  logic  hex_flg_i,
+    input  logic [3:0] dc_hex_data_i,
+    output logic [7:0] ascii_data_o,
+
+    input  logic [DATA_W-1 :0] ds_ascii_data_i,
+    output logic [3:0]         hex_data_o,
+
+    input  logic [DATA_W-1 :0] data_i,
+    output logic [MEM_WIDTH-1 :0] addr_o
+);
+
+
+    state_f state;
+    logic [$clog2(N)-1 :0] data_cnt;
+    logic res_reg;
+    logic [DATA_FSM_W-1 :0] data_reg;
+    logic end_addr;
+    logic res_flg;
+    logic res_cnt;
+
+    always_ff@(posedge clk_i, negedge rstn_i) begin
+        if(rstn_i) begin
+            tx_data_t_o <= '0;
+            tx_rdy_t_o <= '0;
+            data_cnt <= '0;
+            res_cnt <= '0;
+            res_reg <= '0;
+            data_reg <= '0;
+            addr <= '0;
+            end_addr <= '0;
+            res_flg <= '0;
+        end
+        else case(state)
+                IDLE: if(rx_data_en_i)
+                          if(hex_flg_i) begin
+                              addr_o <= RES_A0;
+                              end_addr <= RES_A1;
+                              data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
+                              data_cnt <= data_cnt + 1'b1;
+                              state <= RDT;
+                          end
+                          else if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                              state <= TRES;
+                              addr_o <= ERR_A0_MX;
+                              end_addr <= ERR_A1_MX;
+                          end
+                      else state <= IDLE;
+                RDT: if(rx_data_en_i)
+                          if(hex_flg_i) begin
+                              addr_o <= RES_A0;
+                              end_addr <= RES_A1;
+                              data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
+                              data_cnt <= data_cnt + 1'b1;
+
+                              if(data_cnt == 2*N-1) begin
+                                  data_cnt <= '0;
+                                  state <= RCR;
+                              end
+                              else state <= RDT;
+                          end
+                          else if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                              state <= TRES;
+                              addr_o <= ERR_A0_MX;
+                              end_addr <= ERR_A1_MX;
+                          end
+                     else state <= RDT;
+                RCR: if(rx_data_en_i) begin
+                         if(rx_data_r_i[7:0] == 8'h0d) state <= RLF;
+                         else if(~(rx_data_r_i[7:0] == 8'h0d) || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                            state <= TRES;
+                            addr_o <= ERR_A0_MX;
+                            end_addr <= ERR_A1_MX;
+                        end
+                     end
+                     else state <= RCR;
+                RLF: if(rx_data_en_i)
+                         if(rx_data_r_i[7:0] == 8'h0a) begin 
+                            state <= TRES;
+                            res_reg <= res_reg - data_reg; // -
+                            res_flg <= '1;
+                         end
+                         else if(~(rx_data_r_i[7:0] == 8'h0a) || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                            state <= TRES;
+                            addr_o <= ERR_A0_MX;
+                            end_addr <= ERR_A1_MX;
+                        end
+                     else state <= RLF;
+             endcase
+    end 
+endmodule
