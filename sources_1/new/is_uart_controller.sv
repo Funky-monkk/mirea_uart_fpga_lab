@@ -1,4 +1,5 @@
 module is_uart_controller
+import is_pkg_uart_controller::*;
 (
     // Sys
     input  logic clk_i,
