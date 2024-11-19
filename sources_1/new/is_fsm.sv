@@ -31,6 +31,10 @@ import is_pkg_uart_controller::*;
     logic end_addr;
     logic res_flg;
     logic res_cnt;
+    logic [MEM_WIDTH-1 :0] ERR_A0_MX;
+    logic [MEM_WIDTH-1 :0] ERR_A1_MX;
+    logic [MEM_WIDTH-1 :0] RES_A0;
+    logic [MEM_WIDTH-1 :0] RES_A1;  
 
     always_ff@(posedge clk_i, negedge rstn_i) begin
         if(rstn_i) begin
@@ -38,7 +42,7 @@ import is_pkg_uart_controller::*;
             tx_rdy_t_o <= '0;
             data_cnt <= '0;
             res_cnt <= '0;
-            res_reg <= '0;
+            res_reg <= 4'b1000;
             data_reg <= '0;
             addr <= '0;
             end_addr <= '0;
@@ -46,21 +50,26 @@ import is_pkg_uart_controller::*;
         end
         else case(state)
                 IDLE: if(rx_data_en_i)
-                          if(hex_flg_i) begin
+                        if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                            state <= TRES;
+                            addr_o <= ERR_A0_MX;
+                            end_addr <= ERR_A1_MX;
+                        end
+                        else if(hex_flg_i) begin
                               addr_o <= RES_A0;
                               end_addr <= RES_A1;
                               data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
                               data_cnt <= data_cnt + 1'b1;
                               state <= RDT;
                           end
-                          else if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                      else state <= IDLE;
+                RDT: if(rx_data_en_i)
+                          if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
                               state <= TRES;
                               addr_o <= ERR_A0_MX;
                               end_addr <= ERR_A1_MX;
                           end
-                      else state <= IDLE;
-                RDT: if(rx_data_en_i)
-                          if(hex_flg_i) begin
+                          else if(hex_flg_i) begin
                               addr_o <= RES_A0;
                               end_addr <= RES_A1;
                               data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
@@ -72,33 +81,35 @@ import is_pkg_uart_controller::*;
                               end
                               else state <= RDT;
                           end
-                          else if(~hex_flg_i || rx_data_r_i[9] || rx_data_r_i[8]) begin
-                              state <= TRES;
-                              addr_o <= ERR_A0_MX;
-                              end_addr <= ERR_A1_MX;
-                          end
                      else state <= RDT;
                 RCR: if(rx_data_en_i) begin
-                         if(rx_data_r_i[7:0] == 8'h0d) state <= RLF;
-                         else if(~(rx_data_r_i[7:0] == 8'h0d) || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                        if(~(rx_data_r_i[7:0] == 8'h0d) || rx_data_r_i[9] || rx_data_r_i[8]) begin
                             state <= TRES;
                             addr_o <= ERR_A0_MX;
                             end_addr <= ERR_A1_MX;
                         end
+                        else if(rx_data_r_i[7:0] == 8'h0d) state <= RLF;
                      end
                      else state <= RCR;
                 RLF: if(rx_data_en_i)
-                         if(rx_data_r_i[7:0] == 8'h0a) begin 
+                        if(~(rx_data_r_i[7:0] == 8'h0a) || rx_data_r_i[9] || rx_data_r_i[8]) begin
+                            state <= TRES;
+                            addr_o <= ERR_A0_MX;
+                            end_addr <= ERR_A1_MX;
+                        end
+                        else if(rx_data_r_i[7:0] == 8'h0a) begin 
                             state <= TRES;
                             res_reg <= res_reg - data_reg; // -
                             res_flg <= '1;
                          end
-                         else if(~(rx_data_r_i[7:0] == 8'h0a) || rx_data_r_i[9] || rx_data_r_i[8]) begin
-                            state <= TRES;
-                            addr_o <= ERR_A0_MX;
-                            end_addr <= ERR_A1_MX;
-                        end
                      else state <= RLF;
              endcase
     end 
+
+    assign ascii_data_o = rx_data_r_i;
+
+    always_comb begin
+        
+    end
+
 endmodule

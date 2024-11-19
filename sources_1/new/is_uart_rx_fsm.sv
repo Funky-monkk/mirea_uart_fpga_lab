@@ -86,15 +86,21 @@ import is_pkg_uart_controller::*;
                     else state <= WEND;
                 else state <= RSTB2;
             end
+        //     WEND:begin 
+        //         if(rxd_rg_i) begin
+        //             state <= IDLE;
+        //             rx_data_en_o <= '1;
+        //             rxct_r_o <= '1;  
+        //         end  
+        //         else state <= WEND:
+        //     end 
+        // default: state <= IDLE;  
             WEND:begin 
-                if(rxd_rg_i) begin
                     state <= IDLE;
                     rx_data_en_o <= '1;
                     rxct_r_o <= '1;  
-                end  
-                else state <= WEND:
-            end 
-        default: state <= IDLE;         
+                end
+        default: state <= IDLE;        
         endcase
     end
 

@@ -18,7 +18,24 @@ localparam RES_A0 = 0;
 localparam RE_A1 = 0;
 //====================
 
+//====================
+//--- Addr Map
+//==================== 
 
+    localparam START_ADDR_RES_M = 8'h00;
+    localparam END_ADDR_RES_M =  8'h07;
+
+    localparam START_EADDR_OP_F = 8'h08;
+    localparam END_EADDR_OP_F = 8'h18;
+
+    localparam START_EADDR_PR = 8'h19;
+    localparam END_EADDR_PR   = 8'h28;
+
+    localparam START_EADDR_FR = 8'h29;
+    localparam END_EADDR_FR = 8'h3f;
+
+    localparam START_EADDR_FR_PR = 8'h40;
+    localparam END_EADDR_FR_PF = 8'4a;
 
     typedef enum logic [2:0] {
         IDLE  = 3'b000,
