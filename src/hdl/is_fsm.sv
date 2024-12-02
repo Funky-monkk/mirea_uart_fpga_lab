@@ -24,6 +24,17 @@ import is_pkg_uart_controller::*;
 );
 
 
+    typedef enum logic [3:0] {
+        IDLE = 4'b0000,
+        RDT  = 4'b0001,
+        RCR  = 4'b0010,
+        RLF  = 4'b0011,
+        TRES = 4'b0100,
+        TMEM = 4'b0101,
+        TDT  = 4'b0110,
+        TCR  = 4'b0111,
+        TLF  = 4'b1000 } state_f;
+
     state_f state;
     logic [$clog2(DATA_RX_W)-1 :0] data_cnt;
     logic [DATA_TX_W-1 :0] res_reg;
@@ -44,7 +55,7 @@ import is_pkg_uart_controller::*;
             res_cnt <= '0;
             res_reg <= 4'b1000;
             data_reg <= '0;
-            addr <= '0;
+            addr_o <= '0;
             end_addr <= '0;
             res_flg <= '0;
         end
@@ -58,7 +69,7 @@ import is_pkg_uart_controller::*;
                         else if(hex_flg_i) begin
                               addr_o <= RES_A0;
                               end_addr <= RES_A1;
-                              data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
+                              data_reg <= {data_reg[DATA_TX_W-5 :0], dc_hex_data_i};
                               data_cnt <= data_cnt + 1'b1;
                               state <= RDT;
                           end
@@ -72,7 +83,7 @@ import is_pkg_uart_controller::*;
                           else if(hex_flg_i) begin
                               addr_o <= RES_A0;
                               end_addr <= RES_A1;
-                              data_reg <= {data_reg[DATA_FSM_W-5 :0], dc_hex_data_i};
+                              data_reg <= {data_reg[DATA_TX_W-5 :0], dc_hex_data_i};
                               data_cnt <= data_cnt + 1'b1;
 
                               if(data_cnt == 2*N-1) begin

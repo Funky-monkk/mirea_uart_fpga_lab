@@ -20,6 +20,16 @@ import is_pkg_uart_controller::*;
 //--- Local Declaratons
 //======================
 
+    typedef enum logic [2:0] {
+        IDLE  = 3'b000,
+        WCE   = 3'b001,
+        TSTRB = 3'b010,
+        TDT   = 3'b011,
+        TPARB = 3'b100,
+        TSTB1 = 3'b101,
+        TSTB2 = 3'b110,
+        XXX   = 'x } state_t;
+
 state_t state;
 
 logic [2:0] tx_data_cnt;
@@ -42,7 +52,7 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
             if(tx_rdy_t_i) begin
                 tx_data <= tx_data_r_i;
                 tx_par_bit_r <= '0;
-                tx_rdy_r <= '0;
+                tx_rdy_r_o <= '0;
                 if(uart_ce_i) begin
                     txd_o <= '0;
                     txct_r_o <= '0;
@@ -50,10 +60,7 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
                 end
                 else state <= WCE;
             end
-            else begin
-                state <= IDLE;
-                rx_data_en_o <= '0;
-            end
+            else state <= IDLE;
         end 
         WCE:  
             if(uart_ce_i) begin
@@ -66,7 +73,7 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
             if(tx_ce_i) begin
                 txd_o <= tx_data[0];
                 tx_data <= {1'b0,tx_data[7:1]};
-                else state <= TDT;
+                state <= TDT;
             end
             else state <= TSTRB;
 
@@ -83,7 +90,7 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
                     txd_o <= tx_data[0];
                 end 
             end
-            else state <= RDT;
+            else state <= TDT;
 
         TPARB: begin
             if(tx_ce_i) begin
@@ -101,10 +108,11 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
             else state <= TSTB1;
         end
         TSTB2: begin
-            if(tx_ce_i) 
-                tx_rdy_r_o <= '1
-                txct_r_o <= '1
+            if(tx_ce_i) begin
+                tx_rdy_r_o <= '1;
+                txct_r_o <= '1;
                 state <= IDLE;
+            end
             else state <= TSTB2;
         end
     default: state <= IDLE;         
