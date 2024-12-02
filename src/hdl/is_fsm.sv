@@ -132,4 +132,27 @@ import is_pkg_uart_controller::*;
         endcase
     end
 
+    // always_comb begin
+    //     hex_data_o = '0;
+    //     case(res_cnt)
+    //     hex_data_o = res_reg[3:0];
+    //     hex_data_o = res_reg[7:4];
+    //     hex_data_o = res_reg[3:0];
+    //     hex_data_o = res_reg[3:0];
+    //     hex_data_o = res_reg[3:0];
+    //     hex_data_o = res_reg[3:0];
+    //     hex_data_o = res_reg[3:0];
+    //     endcase
+    // end
+
+    // genvar i;
+
+    // generate
+    //     for(i = 0; i < 92; i++) begin
+    //        assign hex_data_o = (res_cnt == i) ? res_reg[(DATA_TX_W-1) - 4*i -: 4] : '0;
+    //     end
+    // endgenerate
+ 
+
+
 endmodule
