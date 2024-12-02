@@ -10,12 +10,9 @@ localparam ROM_W  = 128;
 localparam RATIO = 8;
 localparam MEM_WIDTH = 2;
 localparam N = 0;
-localparam DATA_FSM_W = 48;
-localparam DATA_RES_W = 92;
-localparam ERR_A0_MX = 0;
-localparam ERR_A1_MX = 0;
-localparam RES_A0 = 0;
-localparam RE_A1 = 0;
+localparam DATA_RX_W = 48;
+localparam DATA_TX_W = 92;
+
 //====================
 
 //====================

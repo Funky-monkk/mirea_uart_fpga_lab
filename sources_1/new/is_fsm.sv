@@ -25,12 +25,12 @@ import is_pkg_uart_controller::*;
 
 
     state_f state;
-    logic [$clog2(N)-1 :0] data_cnt;
-    logic res_reg;
-    logic [DATA_FSM_W-1 :0] data_reg;
+    logic [$clog2(DATA_RX_W)-1 :0] data_cnt;
+    logic [DATA_TX_W-1 :0] res_reg;
+    logic [DATA_TX_W-1 :0] data_reg;
     logic end_addr;
     logic res_flg;
-    logic res_cnt;
+    logic [$clog2(DATA_TX_W)-1 :0] res_cnt;
     logic [MEM_WIDTH-1 :0] ERR_A0_MX;
     logic [MEM_WIDTH-1 :0] ERR_A1_MX;
     logic [MEM_WIDTH-1 :0] RES_A0;
@@ -107,9 +107,18 @@ import is_pkg_uart_controller::*;
     end 
 
     assign ascii_data_o = rx_data_r_i;
+    assign RES_A0 = START_ADDR_RES_M;
+    assign RES_A1 = END_ADDR_RES_M;
+
 
     always_comb begin
-        
+        {ERR_A0_MX, ERR_A1_MX} = '0;
+        case(rx_data_r_i[9:8])
+            2'b00: begin ERR_A0_MX = START_EADDR_OP_F;  ERR_A1_MX = END_EADDR_OP_F;  end
+            2'b01: begin ERR_A0_MX = START_EADDR_PR;    ERR_A1_MX = END_EADDR_PR;    end
+            2'b10: begin ERR_A0_MX = START_EADDR_FR;    ERR_A1_MX = END_EADDR_FR;    end
+            2'b11: begin ERR_A0_MX = START_EADDR_FR_PR; ERR_A1_MX = END_EADDR_FR_PF; end
+        endcase
     end
 
 endmodule
