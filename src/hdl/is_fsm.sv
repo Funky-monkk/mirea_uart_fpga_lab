@@ -184,8 +184,7 @@ import is_pkg_uart_controller::*;
     end
 
 
-
-    always_comb
+    always_comb begin
         hex_data_o = '0;
         case(res_cnt)
         0: hex_data_o = res_reg[91:88];
@@ -212,10 +211,7 @@ import is_pkg_uart_controller::*;
         21: hex_data_o = res_reg[7:4];
         22: hex_data_o = res_reg[3:0];
         endcase
-
-
-
- 
+    end
 
 
 endmodule
