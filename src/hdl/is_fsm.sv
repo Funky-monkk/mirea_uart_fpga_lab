@@ -185,13 +185,36 @@ import is_pkg_uart_controller::*;
 
 
 
-    genvar i;
+    always_comb
+        hex_data_o = '0;
+        case(res_cnt)
+        0: hex_data_o = res_reg[91:88];
+        1: hex_data_o = res_reg[87:84];
+        2: hex_data_o = res_reg[83:80];
+        3: hex_data_o = res_reg[79:76];
+        4: hex_data_o = res_reg[75:72];
+        5: hex_data_o = res_reg[71:68];
+        6: hex_data_o = res_reg[67:64];
+        7: hex_data_o = res_reg[63:60];
+        8: hex_data_o = res_reg[59:56];
+        9: hex_data_o = res_reg[55:52];
+        10: hex_data_o = res_reg[51:48];
+        11: hex_data_o = res_reg[47:44];
+        12: hex_data_o = res_reg[43:40];
+        13: hex_data_o = res_reg[39:36];
+        14: hex_data_o = res_reg[35:32];
+        15: hex_data_o = res_reg[31:28];
+        16: hex_data_o = res_reg[27:24];
+        17: hex_data_o = res_reg[23:20];
+        18: hex_data_o = res_reg[19:16];
+        19: hex_data_o = res_reg[15:12];
+        20: hex_data_o = res_reg[11:8];
+        21: hex_data_o = res_reg[7:4];
+        22: hex_data_o = res_reg[3:0];
+        endcase
 
-    generate;
-        for(i = 0; i < K; i++) begin
-           assign hex_data_o = (res_cnt == i) ? res_reg[(DATA_TX_W-1) - 4*i -: 4] : '0;
-        end
-    endgenerate
+
+
  
 
 
