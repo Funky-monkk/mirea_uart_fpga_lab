@@ -32,7 +32,7 @@ import is_pkg_uart_controller::*;
 //=====================
 
     always_ff@(posedge clk_i, negedge rstn_i) begin
-        if(rstn_i) begin
+        if(~rstn_i) begin
             state <= IDLE;
             rx_data_en_o <= '0;
             rx_data_t_o <= '0;

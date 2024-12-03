@@ -38,7 +38,7 @@ logic [DATA_W-1 :0] tx_data;
 //=====================
 
 always_ff@(posedge clk_i, negedge rstn_i) begin
-    if(rstn_i) begin
+    if(~rstn_i) begin
         state <= IDLE;
         tx_data <= '0;
         tx_par_bit_r <= '0;
