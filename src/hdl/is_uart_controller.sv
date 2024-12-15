@@ -41,12 +41,12 @@ import is_pkg_uart_controller::*;
     );
 
     //--- UART Clock Div
-    is_uart_clk_div is_uart_clk_div_controller_inst
+    is_uart_ce is_uart_clk_div_controller_inst
     (
         .clk_i(clk_i),
         .rstn_i(rstn_i),
         
-        .slow_clk_o(uart_ce)
+        .uart_ce_o(uart_ce)
     );
 
     //-- Rx FSM

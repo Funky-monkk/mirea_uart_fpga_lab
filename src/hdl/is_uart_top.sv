@@ -77,8 +77,8 @@ import is_pkg_uart_controller::*;
 
     is_uart_clk_div 
     #(
-        .fast_clk_mhz(),
-        .slow_clk_khz()
+        .fast_clk_mhz(100),
+        .slow_clk_khz(1)
     )
     clk_div_inst
     (

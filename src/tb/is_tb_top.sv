@@ -18,6 +18,7 @@ import is_pkg_uart_controller::*;
 
 
     task reset();
+    uart_data_rx_i = '0;
         rstn_i = '1;
         #300;
         rstn_i = '0;
@@ -31,11 +32,32 @@ import is_pkg_uart_controller::*;
 
     // endtask
 
+    logic uart_ce;
+    
+    is_uart_ce uart_m_clk
+    (
+        .clk_i(clk_i),
+        .rstn_i(rstn_i),
+        
+        .uart_ce_o(uart_ce)
+    );
+
 
     initial begin
         clk_i = '0;
      forever begin #(CLK_PERIOD/2) clk_i = ~clk_i; end
     end
+
+    initial begin 
+         reset();
+         #1000;
+        @(posedge uart_ce);
+        uart_data_rx_i <= '1;
+        @(posedge uart_ce);
+        uart_data_rx_i <= '0;
+        @(posedge uart_ce);
+        uart_data_rx_i <= '1;    
+      end
 
 
 endmodule
