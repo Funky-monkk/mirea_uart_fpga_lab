@@ -11,13 +11,13 @@ module is_uart_sync
     
     always_ff@(posedge clk_i, negedge rstn_i) begin
         if(~rstn_i) begin
-        uart_rxd_r_o <= '0;
-        rx_ff <= '0;
+            uart_rxd_r_o <= '1;
+            rx_ff <= '1;
         end
         else begin
-        rx_ff[0] <= uart_rxd_i;
-        rx_ff[1] <= rx_ff[0];
-        uart_rxd_r_o <= rx_ff[1];
+            rx_ff[0] <= uart_rxd_i;
+            rx_ff[1] <= rx_ff[0];
+            uart_rxd_r_o <= rx_ff[1];
         end
     end
 

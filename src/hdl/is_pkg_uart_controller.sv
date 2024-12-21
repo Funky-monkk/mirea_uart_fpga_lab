@@ -4,14 +4,15 @@ package is_pkg_uart_controller;
 //--- Common Param
 //===================
 
-localparam DATA_W = 8;
-localparam ADDR_W = 8;
-localparam ROM_W  = 128;
-localparam RATIO = 8;
-localparam MEM_WIDTH = 8;
-localparam N = 0;
-localparam DATA_RX_W = 48;
-localparam DATA_TX_W = 92;
+    localparam DATA_W = 8;
+    localparam ADDR_W = 8;
+    localparam ROM_W  = 2**DATA_W;
+    localparam RATIO = 8;
+    localparam MEM_WIDTH = 8;
+    localparam DATA_RX_W = 48;
+    localparam DATA_TX_W = 92;
+    localparam N = DATA_RX_W/8;
+    localparam K = DATA_TX_W/4;
 
 //====================
 
@@ -20,19 +21,18 @@ localparam DATA_TX_W = 92;
 //==================== 
 
     localparam START_ADDR_RES_M = 8'h00;
-    localparam END_ADDR_RES_M =  8'h07;
+    localparam END_ADDR_RES_M   =  8'h07;
 
     localparam START_EADDR_OP_F = 8'h08;
-    localparam END_EADDR_OP_F = 8'h18;
+    localparam END_EADDR_OP_F   = 8'h18;
 
     localparam START_EADDR_PR = 8'h19;
     localparam END_EADDR_PR   = 8'h28;
 
     localparam START_EADDR_FR = 8'h29;
-    localparam END_EADDR_FR = 8'h3f;
+    localparam END_EADDR_FR   = 8'h3f;
 
     localparam START_EADDR_FR_PR = 8'h40;
-    localparam END_EADDR_FR_PF = 8'h4a;
-
+    localparam END_EADDR_FR_PF   = 8'h4a;
 
 endpackage 

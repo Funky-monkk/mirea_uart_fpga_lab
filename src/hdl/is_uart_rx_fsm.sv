@@ -93,7 +93,10 @@ import is_pkg_uart_controller::*;
                         rx_data_en_o <= '1;
                         rxct_r_o <= '1;
                     end
-                    else state <= WEND;
+                    else begin 
+                        state <= WEND;
+                        rx_data_t_o[9] <= '1;
+                    end
                 else state <= RSTB2;
             end
         //     WEND:begin 

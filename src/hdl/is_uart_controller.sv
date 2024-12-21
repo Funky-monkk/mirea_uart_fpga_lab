@@ -90,7 +90,7 @@ import is_pkg_uart_controller::*;
         .tx_ce_o(tx_ce)
     );
 
-    //--- Cnt rxs
+    //--- Cnt rx
     is_uart_cnt_samp_rx is_uart_cnt_samp_rx_inst
     (
         .clk_i(clk_i),

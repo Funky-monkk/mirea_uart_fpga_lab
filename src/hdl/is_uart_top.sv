@@ -28,7 +28,7 @@ import is_pkg_uart_controller::*;
     logic hex_flg;
     logic [3:0] dc_hex_data;
     logic [DATA_W-1 :0] ascii_data;
-    logic [DATA_W-1 :0] ds_ascii_data;
+    logic [DATA_W-1 :0] dc_ascii_data;
     logic [3:0] hex_data;
     logic [DATA_W-1 :0] rom_data;
     logic [MEM_WIDTH-1 :0] rom_addr;
@@ -56,7 +56,7 @@ import is_pkg_uart_controller::*;
         .CLK(clk_i),                    
         .CE(slow_clk),                     
         .BTN_IN(btn0_i),                 
-        .RST(sync_rstn),                     
+        .RST(~sync_rstn),                     
         .BTN_OUT(gen_frt_err),                
         .BTN_CEO()                  
     );
@@ -66,7 +66,7 @@ import is_pkg_uart_controller::*;
         .CLK(clk_i),                    
         .CE(slow_clk),                     
         .BTN_IN(btn1_i),                 
-        .RST(sync_rstn),                     
+        .RST(~sync_rstn),                     
         .BTN_OUT(gen_par_err),                
         .BTN_CEO()                  
     );
@@ -140,7 +140,7 @@ import is_pkg_uart_controller::*;
     .dc_hex_data_i(dc_hex_data),
     .ascii_data_o(ascii_data),
 
-    .ds_ascii_data_i(ds_ascii_data),
+    .dc_ascii_data_i(dc_ascii_data),
     .hex_data_o(hex_data),
 
     .data_i(rom_data),
@@ -166,7 +166,7 @@ import is_pkg_uart_controller::*;
     (
         .hex_data_i(hex_data),
         
-        .ascii_data_o(ds_ascii_data)
+        .ascii_data_o(dc_ascii_data)
     );
 
     is_uart_dec_ascii_hex is_uart_dec_ascii_hex_inst

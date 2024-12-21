@@ -14,15 +14,14 @@ import is_pkg_uart_controller::*;
 
     input  logic  hex_flg_i,
     input  logic [3:0] dc_hex_data_i,
-    output logic [7:0] ascii_data_o,
+    output logic [DATA_W-1:0] ascii_data_o,
 
-    input  logic [DATA_W-1 :0] ds_ascii_data_i,
+    input  logic [DATA_W-1 :0] dc_ascii_data_i,
     output logic [3:0]         hex_data_o,
 
     input  logic [DATA_W-1 :0] data_i,
     output logic [MEM_WIDTH-1 :0] addr_o
 );
-    localparam K = 23;
 
     typedef enum logic [3:0] {
         IDLE = 4'b0000,
@@ -38,11 +37,11 @@ import is_pkg_uart_controller::*;
     state_f state;
 
     logic [$clog2(DATA_RX_W)-1 :0] data_cnt;
+    logic [$clog2(DATA_TX_W)-1 :0] res_cnt;
     logic [DATA_TX_W-1 :0] res_reg;
     logic [DATA_RX_W-1 :0] data_reg;
-    logic end_addr;
+    logic [MEM_WIDTH-1 :0] end_addr;
     logic res_flg;
-    logic [$clog2(DATA_TX_W)-1 :0] res_cnt;
     logic [MEM_WIDTH-1 :0] ERR_A0_MX;
     logic [MEM_WIDTH-1 :0] ERR_A1_MX;
     logic [MEM_WIDTH-1 :0] RES_A0;
@@ -50,11 +49,12 @@ import is_pkg_uart_controller::*;
 
     always_ff@(posedge clk_i, negedge rstn_i) begin
         if(~rstn_i) begin
+            state <= IDLE;
             tx_data_t_o <= '0;
             tx_rdy_t_o <= '0;
             data_cnt <= '0;
             res_cnt <= '0;
-            res_reg <= 4'b1000;
+            res_reg <= '1;
             data_reg <= '0;
             addr_o <= '0;
             end_addr <= '0;
@@ -82,11 +82,8 @@ import is_pkg_uart_controller::*;
                               end_addr <= ERR_A1_MX;
                           end
                           else if(hex_flg_i) begin
-                              addr_o <= RES_A0;
-                              end_addr <= RES_A1;
                               data_reg <= {data_reg[DATA_RX_W-5 :0], dc_hex_data_i};
                               data_cnt <= data_cnt + 1'b1;
-
                               if(data_cnt == 2*N-1) begin
                                   data_cnt <= '0;
                                   state <= RCR;
@@ -122,24 +119,26 @@ import is_pkg_uart_controller::*;
                     state <= TMEM;
                 end
                 TMEM: begin
-                    if(tx_rdy_r_i) begin
+                    if(tx_rdy_r_i) 
                         if(addr_o == end_addr + 1'b1)
                             if(res_flg) begin
                                 res_flg <= '0;
-                                tx_data_t_o <= ds_ascii_data_i;
+                                tx_data_t_o <= dc_ascii_data_i;
                                 res_cnt <= res_cnt + 1'b1;
                                 state <= TDT;
                             end
+                            else begin
+                                tx_data_t_o <= 8'h0d;
+                                state <= TCR;
+                            end
+                    
                         else begin
-                            tx_data_t_o <= 8'h0d;
-                            state <= TCR;
+                            tx_data_t_o <= data_i;
+                            addr_o <= addr_o + 1'b1;
+                            state <= TMEM;
                         end
-                    end
-                    else begin
-                        tx_data_t_o <= data_i;
-                        addr_o <= addr_o + 1'b1;
-                        state <= TMEM;
-                    end
+                    else state <= TMEM;
+                   
                 end
                 TDT: begin
                     if(tx_rdy_r_i) begin
@@ -148,12 +147,13 @@ import is_pkg_uart_controller::*;
                             res_cnt <= '0;
                             state <= TCR;
                         end
+                        else begin
+                            tx_data_t_o <= dc_ascii_data_i;
+                            res_cnt <= res_cnt + 1'b1;
+                            state <= TDT;
+                        end
                     end
-                    else begin
-                        tx_data_t_o <= ds_ascii_data_i;
-                        res_cnt <= res_cnt + 1'b1;
-                        state <= TDT;
-                    end
+                else state <= TDT;
                 end
                 TCR: if(tx_rdy_r_i) begin
                     tx_data_t_o <= 8'h0a;
@@ -169,6 +169,7 @@ import is_pkg_uart_controller::*;
     end 
 
     assign ascii_data_o = rx_data_r_i;
+
     assign RES_A0 = START_ADDR_RES_M;
     assign RES_A1 = END_ADDR_RES_M;
 
@@ -183,35 +184,8 @@ import is_pkg_uart_controller::*;
         endcase
     end
 
-
     always_comb begin
-        hex_data_o = '0;
-        case(res_cnt)
-        0: hex_data_o = res_reg[91:88];
-        1: hex_data_o = res_reg[87:84];
-        2: hex_data_o = res_reg[83:80];
-        3: hex_data_o = res_reg[79:76];
-        4: hex_data_o = res_reg[75:72];
-        5: hex_data_o = res_reg[71:68];
-        6: hex_data_o = res_reg[67:64];
-        7: hex_data_o = res_reg[63:60];
-        8: hex_data_o = res_reg[59:56];
-        9: hex_data_o = res_reg[55:52];
-        10: hex_data_o = res_reg[51:48];
-        11: hex_data_o = res_reg[47:44];
-        12: hex_data_o = res_reg[43:40];
-        13: hex_data_o = res_reg[39:36];
-        14: hex_data_o = res_reg[35:32];
-        15: hex_data_o = res_reg[31:28];
-        16: hex_data_o = res_reg[27:24];
-        17: hex_data_o = res_reg[23:20];
-        18: hex_data_o = res_reg[19:16];
-        19: hex_data_o = res_reg[15:12];
-        20: hex_data_o = res_reg[11:8];
-        21: hex_data_o = res_reg[7:4];
-        22: hex_data_o = res_reg[3:0];
-        endcase
+        hex_data_o =  res_reg[((4*K)-1) - 4*res_cnt -: 4];
     end
-
 
 endmodule

@@ -15,12 +15,11 @@ import is_pkg_uart_controller::*;
 
 
     always_ff@(posedge clk_i, negedge rstn_i) begin
-        if(~rstn_i) cnt_sample <= '0;
-        else if (rxct_r_i) cnt_sample <= '0;
+        if(~rstn_i || rxct_r_i) cnt_sample <= '0;
         else if (uart_ce_i) cnt_sample <= cnt_sample + 1'b1;
     end
 
-    assign rx_ce_o = uart_ce_i && cnt_sample[2] && 
+    assign rx_ce_o = uart_ce_i && ~cnt_sample[2] && 
                          cnt_sample[1] && cnt_sample[0];
 
 
