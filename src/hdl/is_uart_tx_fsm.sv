@@ -51,7 +51,7 @@ always_ff@(posedge clk_i, negedge rstn_i) begin
         IDLE: begin
             if(tx_rdy_t_i) begin
                 tx_data <= tx_data_r_i;
-                tx_par_bit_r <= '0;
+                tx_par_bit_r <= '0;     // Space Check
                 tx_rdy_r_o <= '0;
                 if(uart_ce_i) begin
                     txd_o <= '0;

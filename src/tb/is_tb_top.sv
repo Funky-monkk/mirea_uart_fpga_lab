@@ -18,7 +18,9 @@ import is_pkg_uart_controller::*;
 
 
     task reset();
-    uart_data_rx_i = '0;
+    btn1_i = '0;
+    btn0_i = '0;
+    uart_data_rx_i = '1;
         rstn_i = '1;
         #300;
         rstn_i = '0;
@@ -51,6 +53,11 @@ import is_pkg_uart_controller::*;
     initial begin 
          reset();
          #1000;
+         btn1_i = '1;
+         btn0_i = '1;
+         #10000;
+         btn1_i = '0;
+         btn0_i = '0;
         @(posedge uart_ce);
         uart_data_rx_i <= '1;
         @(posedge uart_ce);

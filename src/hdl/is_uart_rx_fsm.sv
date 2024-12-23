@@ -73,7 +73,7 @@ import is_pkg_uart_controller::*;
             end
             RPARB: begin
                 if(rx_ce_i) begin
-                    rx_data_t_o[8] <= (rxd_rg_i == '0); // Space 
+                    rx_data_t_o[8] <= (rxd_rg_i ^ '0); // Space 
                     state <= RSTB1;
                 end
                 else state <= RPARB; 
